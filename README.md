@@ -3,7 +3,7 @@
 ## python
 
 ```shell
-python main.py -u "https://mdpr.jp/cinema/3928728"
+python pymdp.py -u "https://mdpr.jp/cinema/3928728"
 ```
 
 ## docker

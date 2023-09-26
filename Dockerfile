@@ -5,7 +5,7 @@ COPY requirements.txt /requirements.txt
 
 RUN pip install --no-cache-dir -r /requirements.txt
 
-COPY main.py /app/
+COPY pymdp.py /app/
 
 FROM base
 
@@ -14,5 +14,5 @@ COPY --from=builder /app /app
 
 WORKDIR /app
 
-ENTRYPOINT ["/usr/local/bin/python", "main.py"]
+ENTRYPOINT ["/usr/local/bin/python", "pymdp.py"]
 CMD ["$VAR"]
