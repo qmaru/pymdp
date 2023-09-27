@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import json
 import urllib.parse
+from typing import List
 
 import aiohttp
 from lxml import etree
@@ -12,7 +13,7 @@ class MdprMedia:
         self.session = aiohttp.ClientSession()
         self.url = url
 
-    def __get_article_id(self):
+    def __get_article_id(self) -> str:
         url = self.url.strip()
         if "https://mdpr.jp" in url:
             if "photo/details" not in url:
@@ -20,7 +21,7 @@ class MdprMedia:
                 return url_parts[-1]
         return ""
 
-    async def get_image_index(self):
+    async def get_image_index(self) -> str:
         aid = self.__get_article_id()
         if aid == "":
             return ""
@@ -46,11 +47,10 @@ class MdprMedia:
                     mdpr_json = json.loads(mdpr_json_str)
                     if aid in mdpr_json.get("url"):
                         return MDPR_HOST + mdpr_json.get("url")
-            return ""
+        return ""
 
-
-    async def get_image_urls(self, image_index: str):
-        urls = []
+    async def get_image_urls(self, image_index: str) -> List[str]:
+        urls: List[str] = []
 
         USER_AGENT = "okhttp/4.9.1"
         MDPRUSER_AGENT = "sony; E653325; android; 7.1.1; 3.10.4838(66);"
@@ -82,8 +82,11 @@ async def main():
     if url:
         mdpr = MdprMedia(url)
         image_index = await mdpr.get_image_index()
-        image_urls = await mdpr.get_image_urls(image_index)
-        print(image_urls)
+        if image_index:
+            image_urls = await mdpr.get_image_urls(image_index)
+            print(image_urls)
+        else:
+            print("URL cannot match.")
         await mdpr.close()
     else:
         parser.print_help()
