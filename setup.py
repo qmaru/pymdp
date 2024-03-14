@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pymdp',
-    version='1.0.1',
+    version='1.0.2',
     description='mdpr.jp image list',
     author='qmaru',
     url='https://github.com/qmaru/pymdp',
