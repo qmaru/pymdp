@@ -64,17 +64,22 @@ class MdprMedia:
     async def close(self):
         await self.session.close()
 
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
+    async def __aenter__(self):
+        return self
+
 
 async def run(url: str):
     # url = "https://mdpr.jp/cinema/3928728"
-    mdpr = MdprMedia(url)
-    image_index = await mdpr.get_image_index()
-    if image_index:
-        image_urls = await mdpr.get_image_urls(image_index)
-        print(image_urls)
-    else:
-        print("URL cannot match.")
-    await mdpr.close()
+    async with MdprMedia(url) as mdpr:
+        image_index = await mdpr.get_image_index()
+        if image_index:
+            image_urls = await mdpr.get_image_urls(image_index)
+            print(image_urls)
+        else:
+            print("URL cannot match.")
 
 
 def get_args():
