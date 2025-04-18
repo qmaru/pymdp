@@ -1,10 +1,10 @@
-FROM python:3.11.5-slim-bookworm as builder
+FROM python:3.11-slim-bookworm AS builder
 
 COPY requirements.txt /requirements.txt
 
 RUN pip install --no-cache-dir -r /requirements.txt
 
-COPY pymdp.py /app/
+COPY src/pymdp/pymdp.py /app/
 
 FROM gcr.io/distroless/python3-debian12
 

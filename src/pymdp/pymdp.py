@@ -2,7 +2,6 @@ import argparse
 import asyncio
 import json
 import urllib.parse
-from typing import List
 
 import aiohttp
 from lxml import etree
@@ -31,10 +30,7 @@ class MdprMedia:
         X_REQUESTED_WITH = "jp.mdpr.mdprviewer"
 
         mobile_index = f"{MDPR_HOST}/articles/detail/{aid}"
-        headers = {
-            "X-Requested-With": X_REQUESTED_WITH,
-            "User-Agent": USER_AGENT
-        }
+        headers = {"X-Requested-With": X_REQUESTED_WITH, "User-Agent": USER_AGENT}
 
         async with self.session.get(mobile_index, headers=headers) as response:
             body = await response.text()
@@ -49,15 +45,12 @@ class MdprMedia:
                         return MDPR_HOST + mdpr_json.get("url")
         return ""
 
-    async def get_image_urls(self, image_index: str) -> List[str]:
-        urls: List[str] = []
+    async def get_image_urls(self, image_index: str) -> list[str]:
+        urls: list[str] = []
 
         USER_AGENT = "okhttp/4.9.1"
         MDPRUSER_AGENT = "sony; E653325; android; 7.1.1; 3.10.4838(66);"
-        headers = {
-            "mdpr-user-agent": MDPRUSER_AGENT,
-            "User-Agent": USER_AGENT
-        }
+        headers = {"mdpr-user-agent": MDPRUSER_AGENT, "User-Agent": USER_AGENT}
 
         async with self.session.get(image_index, headers=headers) as response:
             body = await response.json()
@@ -72,25 +65,39 @@ class MdprMedia:
         await self.session.close()
 
 
-async def main():
+async def run(url: str):
     # url = "https://mdpr.jp/cinema/3928728"
+    mdpr = MdprMedia(url)
+    image_index = await mdpr.get_image_index()
+    if image_index:
+        image_urls = await mdpr.get_image_urls(image_index)
+        print(image_urls)
+    else:
+        print("URL cannot match.")
+    await mdpr.close()
+
+
+def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--url", dest="url", type=str, help="Url pics download")
     args = parser.parse_args()
     url = args.url
-
     if url:
-        mdpr = MdprMedia(url)
-        image_index = await mdpr.get_image_index()
-        if image_index:
-            image_urls = await mdpr.get_image_urls(image_index)
-            print(image_urls)
-        else:
-            print("URL cannot match.")
-        await mdpr.close()
+        return url
     else:
         parser.print_help()
+        exit()
+
+
+def cli():
+    url = get_args()
+    asyncio.run(run(url))
+
+
+def main():
+    url = get_args()
+    asyncio.run(run(url))
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

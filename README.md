@@ -11,3 +11,9 @@ python pymdp.py -u "https://mdpr.jp/cinema/3928728"
 ```shell
 docker run --rm ghcr.io/qmaru/pymdp -u "https://mdpr.jp/cinema/3928728"
 ```
+
+## uv
+
+```shell
+uv run mdp -u "https://mdpr.jp/cinema/3928728"
+```
