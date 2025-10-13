@@ -15,6 +15,7 @@ docker run --rm ghcr.io/qmaru/pymdp -u "https://mdpr.jp/cinema/3928728"
 ## uv
 
 ```shell
+uv sync
 uv run mdp -u "https://mdpr.jp/cinema/3928728"
 ```
 
