@@ -1,6 +1,6 @@
 [project]
 name = "pymdp"
-version = "1.2.1"
+version = "1.2.2"
 description = "mdpr.jp image list"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -29,4 +29,4 @@ asyncio_default_fixture_loop_scope = "function"
 packages = ["src/pymdp"]
 
 [project.scripts]
-mdp = "pymdp.pymdp:cli"
+mdpdl = "pymdp.pymdp:cli"
