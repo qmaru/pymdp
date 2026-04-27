@@ -30,7 +30,7 @@ class BaseMdprMedia:
 class MobileMdprMedia(BaseMdprMedia):
     def __get_article_id(self) -> str:
         url = self.url
-        if "https://mdpr.jp" in url and "photo/details" not in url:
+        if "https://mdpr.jp" in url and "photo/detail" not in url:
             return url.rstrip("/").split("/")[-1]
         return ""
 
