@@ -135,7 +135,7 @@ class WebMdprMedia(BaseMdprMedia):
         return urls
 
 
-async def fetch_images(client_cls, url: str):
+async def __fetch(client_cls, url: str):
     async with client_cls(url) as client:
         idx = await client.get_image_index()
         if not idx:
@@ -143,18 +143,14 @@ async def fetch_images(client_cls, url: str):
         return await client.get_image_urls(idx)
 
 
-async def run(url: str):
+async def fetch_images(url: str):
     # url = "https://mdpr.jp/cinema/3928728"
-    imgs = await fetch_images(MobileMdprMedia, url)
+    imgs = await __fetch(MobileMdprMedia, url)
 
     if not imgs:
-        imgs = await fetch_images(WebMdprMedia, url)
+        imgs = await __fetch(WebMdprMedia, url)
 
-    if not imgs:
-        print("cannot match.")
-        return
-
-    print(imgs)
+    return imgs
 
 
 def get_args():
@@ -171,13 +167,14 @@ def get_args():
 
 def cli():
     url = get_args()
-    asyncio.run(run(url))
+    imgs = asyncio.run(fetch_images(url))
 
+    if not imgs:
+        print("cannot match.")
+        return
 
-def main():
-    url = get_args()
-    asyncio.run(run(url))
+    print(imgs)
 
 
 if __name__ == "__main__":
-    main()
+    cli()
