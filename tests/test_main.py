@@ -1,18 +1,20 @@
 import pytest
 
-from pymdp.pymdp import MdprMedia
+from pymdp.pymdp import MobileMdprMedia, WebMdprMedia
 
 
 @pytest.mark.parametrize(
-    "url",
+    "cls,url,expected_idx",
     [
-        "https://mdpr.jp/cinema/3928728",
+        (MobileMdprMedia, "https://mdpr.jp/cinema/3928728", "3928728"),
+        (WebMdprMedia, "https://mdpr.jp/cinema/3928728", "14567030"),
     ],
 )
 @pytest.mark.asyncio
-async def test_url(url: str):
-    mdpr = MdprMedia(url)
-    image_index = await mdpr.get_image_index()
-    assert "3928728" in image_index
-    image_urls = await mdpr.get_image_urls(image_index)
-    assert len(image_urls) != 0
+async def test_mdpr_media(cls, url: str, expected_idx: str):
+    async with cls(url) as mdpr:
+        idx = await mdpr.get_image_index()
+        assert expected_idx in idx
+
+        image_urls = await mdpr.get_image_urls(idx)
+        assert image_urls
