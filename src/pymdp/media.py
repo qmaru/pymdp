@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import sys
 
-import aiohttp
+import httpx2
 from lxml import etree
 
 
@@ -14,15 +14,15 @@ class WebMdprMedia:
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
         }
-        self.session: aiohttp.ClientSession | None = None
+        self.session: httpx2.AsyncClient | None = None
 
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
+        self.session = httpx2.AsyncClient()
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
         if self.session:
-            await self.session.close()
+            await self.session.aclose()
 
     async def get_image_index(self) -> str:
         assert self.session is not None, "session not initialized"
@@ -34,8 +34,8 @@ class WebMdprMedia:
         if "photo/detail" in url:
             return url
 
-        async with self.session.get(url, headers=self.headers) as resp:
-            body = await resp.text()
+        resp = await self.session.get(url, headers=self.headers)
+        body = resp.text
 
         html = etree.HTML(body, etree.HTMLParser())
         nodes = html.xpath(r'//a[@class="c-image__image"]')
@@ -50,8 +50,8 @@ class WebMdprMedia:
         assert self.session is not None, "session not initialized"
 
         urls = []
-        async with self.session.get(image_index, headers=self.headers) as resp:
-            body = await resp.text()
+        resp = await self.session.get(image_index, headers=self.headers)
+        body = resp.text
 
         html = etree.HTML(body, etree.HTMLParser())
 
