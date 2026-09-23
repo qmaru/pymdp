@@ -1,12 +1,11 @@
 import pytest
 
-from pymdp.pymdp import MobileMdprMedia, WebMdprMedia
+from pymdp import WebMdprMedia
 
 
 @pytest.mark.parametrize(
     "cls,url,expected_idx",
     [
-        (MobileMdprMedia, "https://mdpr.jp/cinema/3928728", "3928728"),
         (WebMdprMedia, "https://mdpr.jp/cinema/3928728", "14567030"),
     ],
 )
