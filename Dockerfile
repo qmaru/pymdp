@@ -1,21 +1,27 @@
-FROM python:3.11-slim-bookworm AS builder
+ARG PYTHON_VERSION=3.13
 
-COPY requirements.txt /requirements.txt
+FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-trixie-slim AS builder
 
-RUN pip install --no-cache-dir -r /requirements.txt
+WORKDIR /src
 
-COPY src/pymdp/pymdp.py /app/
+COPY README.md pyproject.toml uv.lock ./
 
-FROM gcr.io/distroless/python3-debian12
+RUN uv sync --frozen --no-dev --no-editable --no-install-project
+
+COPY src/ ./src/
+
+RUN uv sync --frozen --no-dev --no-editable
+
+FROM gcr.io/distroless/python3-debian13
+
+ARG PYTHON_VERSION
 
 LABEL description="get mdpr image urls"
 
-COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages
-COPY --from=builder /app /app
+COPY --from=builder /src/.venv /venv
 
-ENV PYTHONPATH=/usr/local/lib/python3.11/site-packages/
+ENV PYTHONPATH=/venv/lib/python${PYTHON_VERSION}/site-packages \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-WORKDIR /app
-
-ENTRYPOINT ["python", "pymdp.py"]
-CMD ["$VAR"]
+ENTRYPOINT ["/usr/bin/python3.13", "/venv/bin/mdpdl"]
